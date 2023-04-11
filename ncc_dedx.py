@@ -4,6 +4,7 @@ import numpy as np
 import sys
 import lar_functions as lar
 import math
+import plotting_functions
 
 kkBlue=RT.TColor(9000,   0/255., 119/255., 187/255.)                ##Add colors from ROOT
 kkOrange  = RT.TColor(9003, 238/255., 119/255.,  51/255.)
@@ -155,37 +156,12 @@ can2.SaveAs("Pion_Energy_Dep.png")
 ########### BETHE_BLOCH ####################################
 pion_mass=139.57 ##MeV
 proton_mass= 938.27##MeV
-electron_mass=.511 #MeV
-c=3*10**8
-LAr_density=1.38 #g/cm^3
-K=.307075 #MeE/mol cm^2
-z=1
-LAr_mass=39.948 #g/mol
-LAr_number=18
-I=188*10**(-6)
-B=2.0*np.log(10)
-X0=.201
-X1=3.00
-delta=[]
-a  = 0.196
-m  = 3.000
-C  = 5.217
-
 p=np.linspace(20,6000)
-beta=p/np.sqrt(p**2+pion_mass**2)
-gamma=1/np.sqrt(1-beta**2)
-Wmax=2*electron_mass*beta**2*gamma**2/(1+2*gamma*electron_mass/c**2/pion_mass+(electron_mass/c**2/pion_mass)**2)
-de_dx=[]
-X = np.log10(beta * gamma)
-for i in range(len(p)):
-    if X0<X[i] and X[i]<X1:
-        delta.append(B*X[i]+a*np.power(X1-X[i],m)-C)
-    if X[i]>X1:
-        delta.append(B*X[i]-C)
-    else:
-        delta.append(0)
-for i in range(len(p)):
-    de_dx.append(K*LAr_density*z**2*LAr_number/LAr_mass/beta[i]**2*(1/2*np.log(2*electron_mass*beta[i]**2*gamma[i]**2*Wmax[i]/I**2)-beta[i]**2-.5*delta[i]))
+proton_de_dx=[]
+pion_de_dx=[]
+for i in p:
+    proton_de_dx.append(Plotting_functions.bethe_bloch(i,proton_mass))
+    pion_de_dx.append(Plotting_functions.bethe_bloch(i,pion_mass))
 ################### DE_DX #########################################
 
 can3=RT.TCanvas("can3","can3",1000,800)
@@ -195,30 +171,12 @@ Pion_Dep=RT.TH2D("h1","Pion de/dx",100,0,6000,50,0,80)
 for i in range(len(Pion_KE)):
     Pion_Dep.Fill(Pion_KE[i],np.mean(Pion_Dedx[i][-3:-1]))
 Pion_Dep.Draw("colz")
-Pion_Curve=RT.TGraph(len(de_dx),(gamma-1)*pion_mass,np.array(de_dx))
+Pion_Curve=RT.TGraph(len(pion_de_dx),(gamma-1)*pion_mass,np.array(pion_de_dx))
 Pion_Curve.Draw("same")
 Pion_Dep.GetXaxis().SetTitle("Kinetic Energy(MeV)")
 Pion_Dep.GetYaxis().SetTitle("de_dx(MeV/cm)")
 RT.gPad.Update()
 can3.SaveAs("Pion_DEDX_hist.png")
-
-p=np.linspace(150,5000)
-beta=p/np.sqrt(p**2+proton_mass**2)
-gamma=1/np.sqrt(1-beta**2)
-
-X = np.log10(beta * gamma)
-for i in range(len(p)):
-    if X0<X[i] and X[i]<X1:
-        delta.append(B*X[i]+a*np.power(X1-X[i],m)-C)
-    if X[i]>X1:
-        delta.append(B*X[i]-C)
-    else:
-        delta.append(0)
-
-Wmax=2*electron_mass*beta**2*gamma**2/(1+2*gamma*electron_mass/c**2/proton_mass+(electron_mass/c**2/proton_mass)**2)
-de_dx=[]
-for i in range(len(p)): 
-    de_dx.append(K*z**2*LAr_density*LAr_number/LAr_mass/beta[i]**2*(1/2*np.log(2*electron_mass*beta[i]**2*gamma[i]**2*Wmax[i]/I**2)-beta[i]**2-.5*delta[i]))
 
 pion_range=[]
 E=np.sqrt(p**2+pion_mass**2)
@@ -226,12 +184,13 @@ for i in range(len(p)):
     delE=np.diff(E)
     integrand=np.trapz(1/np.array(de_dx[0:i])*delE[0:i])
     pion_range.append(integrand)
+pion_range=Plotting_functions.res_range(p,pion_mass,pion_de_dx)
 can4=RT.TCanvas("can4","can4",1000,800)
 Proton_Dep=RT.TH2D("h2","Proton de/dx",100,0,6000,50,0,80)
 for i in range(len(Proton_KE)):
     Proton_Dep.Fill(Proton_KE[i],np.mean(Proton_Dedx[i][-3:-1]))
 Proton_Dep.Draw("colz")
-Proton_Curve=RT.TGraph(len(de_dx),(gamma-1)*proton_mass,np.array(de_dx))
+Proton_Curve=RT.TGraph(len(proton_de_dx),(gamma-1)*proton_mass,np.array(proton_de_dx))
 Proton_Curve.Draw("same")
 Proton_Dep.GetXaxis().SetTitle("Kinetic Energy(MeV)")
 Proton_Dep.GetYaxis().SetTitle("de_dx(MeV/cm)")
