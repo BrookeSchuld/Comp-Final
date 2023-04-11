@@ -5,7 +5,7 @@ import sys
 import lar_functions as lar
 import math
 
-kkBlue=RT.TColor(9000,   0/255., 119/255., 187/255.)
+kkBlue=RT.TColor(9000,   0/255., 119/255., 187/255.)                ##Add colors from ROOT
 kkOrange  = RT.TColor(9003, 238/255., 119/255.,  51/255.)
 
 edep_tree=RT.TChain("EDepSimEvents")
@@ -21,7 +21,7 @@ def is_point_contained(pos):                 ##Check to see if the position is w
     if abs(pos[2])>670:return False
     return True
     
-def statistics(evt,vtx,part_id,trk,mass):
+def statistics(evt,vtx,part_id,trk,mass):                          #Gets kinematics for a specific particle
     energy=[]
     vtx_pos=vtx.GetPosition().Vect()
     position=traj[part_id].Points[-1].GetPosition().Vect()
@@ -32,7 +32,9 @@ def statistics(evt,vtx,part_id,trk,mass):
     KE=(trk.GetInitialMomentum().E()-trk.GetInitialMomentum().M())
     KE_final=(energy[-2]/mass-1)*mass
     return distance,DE,KE_final
-def reco(part_id):
+
+
+def reco(part_id):                                                 #Gets the energy deposited in the detector for a given particle
     reco_energy=0
     de_dx=[]
     for seg in edep_tree.Event.SegmentDetectors:
@@ -49,7 +51,7 @@ def reco(part_id):
                     #if proton_id==key_contrib:
                      #       reco_energy+=seg[1][n].GetEnergyDeposit()
     return reco_energy,de_dx
-def residual(part_id):
+def residual(part_id):                                                                 #Gets the residual range for a given particle
     for seg in edep_tree.Event.SegmentDetectors:
         nChunks=len(seg[1])
         for n in range(nChunks):
