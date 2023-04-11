@@ -160,8 +160,8 @@ p=np.linspace(20,6000)
 proton_de_dx=[]
 pion_de_dx=[]
 for i in p:
-    proton_de_dx.append(Plotting_functions.bethe_bloch(i,proton_mass))
-    pion_de_dx.append(Plotting_functions.bethe_bloch(i,pion_mass))
+    proton_de_dx.append(plotting_functions.bethe_bloch(i,proton_mass))
+    pion_de_dx.append(plotting_functions.bethe_bloch(i,pion_mass))
 ################### DE_DX #########################################
 
 can3=RT.TCanvas("can3","can3",1000,800)
@@ -178,13 +178,7 @@ Pion_Dep.GetYaxis().SetTitle("de_dx(MeV/cm)")
 RT.gPad.Update()
 can3.SaveAs("Pion_DEDX_hist.png")
 
-pion_range=[]
-E=np.sqrt(p**2+pion_mass**2)
-for i in range(len(p)):
-    delE=np.diff(E)
-    integrand=np.trapz(1/np.array(de_dx[0:i])*delE[0:i])
-    pion_range.append(integrand)
-pion_range=Plotting_functions.res_range(p,pion_mass,pion_de_dx)
+pion_range=plotting_functions.res_range(p,pion_mass,pion_de_dx)
 can4=RT.TCanvas("can4","can4",1000,800)
 Proton_Dep=RT.TH2D("h2","Proton de/dx",100,0,6000,50,0,80)
 for i in range(len(Proton_KE)):
