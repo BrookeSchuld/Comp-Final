@@ -156,7 +156,7 @@ can2.SaveAs("Pion_Energy_Dep.png")
 ########### BETHE_BLOCH ####################################
 pion_mass=139.57 ##MeV
 proton_mass= 938.27##MeV
-p=np.linspace(20,6000)
+p=np.linspace(10,6000)
 proton_de_dx=[]
 pion_de_dx=[]
 for i in p:
