@@ -121,6 +121,23 @@ for evt in range(nevt):
             reco_energy,de_dx=reco(pion_id)
             Pion_Reco.append(reco_energy)
             Pion_Dedx.append(de_dx)
+            
+######################## KAONs #######################################
+    kaon_mass=497.61
+    kaons=np.array([130,310,311,321])
+    kaon_id=-1
+    for trk in traj:
+        if abs(trk.GetPDGCode()) in kaons:
+            kaon_id=trk.GetTrackId()
+            kaon_trk=trk
+    if kaon_id==-1:continue
+    if is_point_contained(traj[kaon_id].Points[-1].GetPosition().Vect())==False:continue
+    dist,DE,KE=statistics(evt,vtx,kaon_id,kaon_trk,kaon_mass)
+    Kaon_Energy_Dep.append(DE)
+    Kaon_KE.append(KE)
+    reco_energy,de_dx=reco(kaon_id)
+    Kaon_Reco.append(reco_energy)
+    Kaon_Dedx.append(de_dx)
 ######## PROTON GRAPHS ##################################          
 Proton_Energy=RT.TGraph()
 Proton_DE=RT.TGraph()
@@ -159,9 +176,11 @@ proton_mass= 938.27##MeV
 p=np.linspace(10,6000)
 proton_de_dx=[]
 pion_de_dx=[]
+kaon_de_dx=[]
 for i in p:
     proton_de_dx.append(plotting_functions.bethe_bloch(i,proton_mass))
     pion_de_dx.append(plotting_functions.bethe_bloch(i,pion_mass))
+    kaon_de_dx.append(plotting_functions.bethe_bloch(i,kaon_mass))
 ################### DE_DX #########################################
 
 can3=RT.TCanvas("can3","can3",1000,800)
@@ -190,6 +209,19 @@ Proton_Dep.GetXaxis().SetTitle("Kinetic Energy(MeV)")
 Proton_Dep.GetYaxis().SetTitle("de_dx(MeV/cm)")
 RT.gPad.Update()
 can4.SaveAs("Proton_DEDX_hist.png")
+
+kaon_range=plotting_functions.res_range(p,kaon_mass,kaon_de_dx)
+can6=RT.TCanvas("can6","can6",1000,800)
+Kaon_Dep=RT.TH2D("h4","Kaon de/dx",100,0,6000,50,0,80)
+for i in range(len(Kaon_KE)):
+    Kaon_Dep.Fill(Kaon_KE[i],np.mean(Kaon_Dedx[i][-3:-1]))
+Kaon_Dep.Draw("colz")
+Kaon_Curve=RT.TGraph(len(proton_de_dx),(gamma-1)*kaon_mass,np.array(kaon_de_dx))
+Kaon_Curve.Draw("same")
+Kaon_Dep.GetXaxis().SetTitle("Kinetic Energy(MeV)")
+Kaon_Dep.GetYaxis().SetTitle("de_dx(MeV/cm)")
+RT.gPad.Update()
+can6.SaveAs("Kaon_DEDX_hist.png")
 
 ############################# Residuals ############################
 can5=RT.TCanvas("can5","can5",1000,800)
