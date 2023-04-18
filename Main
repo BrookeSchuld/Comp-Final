@@ -1,0 +1,11 @@
+import ROOT as RT
+from ROOT import TLorentzVector
+import numpy as np
+import sys
+import lar_functions as lar
+import math
+
+def characteristics(part_id):
+    distance,DE,KE_final=statistics(
+    reco_energy,de_dx=reco(part_id)
+    
