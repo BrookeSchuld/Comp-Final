@@ -34,6 +34,10 @@ def bethe_bloch(p,mass):
            integrand=np.trapz(1/np.array(de_dx[0:i])*delE[0:i])
            residual.append(integrand)
        return np.array(residual)
+       
+   
+       
+   
         
            
         
