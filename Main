@@ -5,7 +5,15 @@ import sys
 import lar_functions as lar
 import math
 
-def characteristics(part_id):
-    distance,DE,KE_final=statistics(
+def characteristics(evt,vtx,part_id,trk):
+    proton_mass=938.27
+    pion_mass=135.0
+    kaon_mass=497.61
+    L=[]
+    proton_distance,proton_DE,proton_KE_final=ncc_dedx.statistics(evt,vtx,part_id,trk,proton_mass)
+    pion_distance,pion_DE,pion_KE_final=ncc_dedx.statistics(evt,vtx,part_id,trk,pion_mass)
+    kaon_distance,kaon_DE,kaon_KE_final=ncc_dedx.statistics(evt,vtx,part_id,trk,kaon_mass)
     reco_energy,de_dx=reco(part_id)
+    exp_de_dx=plotting_functions.bethe_bloch(p
+    L.append(proton_DE,pion_DE,kaon_DE)
     
