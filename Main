@@ -7,18 +7,39 @@ import math
 from scipy import optimize
 def f(p,mass.de_dx):
     return plotting_functions.bethe_bloch(p,mass)-de_dx
+    
 
 def characteristics(evt,vtx,part_id,trk):
     masses=np.array([938.27,135.0,497.61]) #proton,pion,kaon
     L=[]
     p=traj[part_id].Points().GetMomentum().Mag()
     range_array,de_dx=ncc_dedx.residual(part_id)
-    optimize.curve_fit(plotting_functions.bethe_bloch, p, de_dx)
-    optimize.curve_fit(plotting_functions.res_range,p,de_dx)
+    bethe_mass=optimize.curve_fit(plotting_functions.bethe_bloch, p, de_dx)
+    residual_mass=optimize.curve_fit(plotting_functions.res_range,p,de_dx)
     
     
     for mass in masses:
         L.append((plotting_functions.bethe_bloch(p,mass)-de_dx)/de_dx)
         res.append((plotting_functions.res_range(p,mass,de_dx))
+    return  bethe_mass,residual_mass
+edep_tree=RT.TChain("EDepSimEvents")
+grtk_tree=RT.TChain("DetSImPassThru/gRooTracker")
+filelist=[sys.argv[x] for x in range(1,len(sys.argv))]
+for file in filelist:
+    edep_tree.Add(file)
+    grtk_tree.Add(file)
+evt=438
+edep_tree.GetEntry(evt)
+grtk_tree.GetEntry(evt)
+vtx=edep_tree.Event.Primaries[0]
+primary_pdg=[x.GetPDGCode() for x in vtx.Particles]
+traj=edep_tree.Event.Trajectories
+for trk in traj:
+    part_id=trk.GetTrackId()
+    part_trk=trk
+    if ncc_dedx.is_point_contained(traj[part_id].Points[-1].GetPosition().Vect())==False: break
+    print(characteristics(evt.vtx,part_id,trk))
+    print(part_id.GetPDGCode())
+
         
         
