@@ -4,6 +4,7 @@ import ROOT as RT
 from ROOT import TLorentzVector
 import sys
 
+#Function takes the momentum array and mass for a particle and returns the expected bethe bloch de/dx value as an array in MeV/cm 
 def bethe_bloch(p,mass):
     electron_mass=.511 #MeV
     c=3*10**8
@@ -12,7 +13,7 @@ def bethe_bloch(p,mass):
     z=1
     LAr_mass=39.948 #g/mol
     LAr_number=18
-    I=188*10**(-6)
+    I=188*10**(-6)      #Needs to be in MeV despite what the PDG seems to say
     B=2.0*np.log(10)
     X0=.201
     X1=3.00
@@ -23,7 +24,7 @@ def bethe_bloch(p,mass):
     beta=p/np.sqrt(p**2+mass**2)
     gamma=1/np.sqrt(1-beta**2)
     de_dx=[]
-    for i in range(len(p)):
+    for i in range(len(p)):   #the density correction factor is different depending on the value of the momentum
         Wmax=2*electron_mass*beta[i]**2*gamma[i]**2/(1+2*gamma[i]*electron_mass/c**2/mass+(electron_mass/c**2/mass)**2)
         delta=0
         X = np.log10(beta[i] * gamma[i])
@@ -31,9 +32,10 @@ def bethe_bloch(p,mass):
         if X>X1: delta=(B*X-C)
         de_dx.append(K*LAr_density*z**2*LAr_number/LAr_mass/beta[i]**2*(1/2*np.log(2*electron_mass*beta[i]**2*gamma[i]**2*Wmax/I**2)-beta[i]**2-.5*delta))
     return de_dx
-        
+
+#Function takes the momentum and mass of a particle and returns the both the de/dx and the residual range in cm
 def res_range(p,mass):
-    de_dx=np.array(bethe_bloch(p,mass))
+    de_dx=np.array(bethe_bloch(p,mass))   #Requires integrating the bethe bloch equation
     p=np.array(p)
     E=np.sqrt(p**2+mass**2)
     delE=np.diff(E)
@@ -41,9 +43,9 @@ def res_range(p,mass):
     for i in range(len(p)):
         integrand=np.trapz(1/np.array(de_dx[0:i])*delE[0:i])
         residual.append(integrand)
-    return (de_dx,residual)
+    return (de_dx,residual)               
        
-def is_point_contained(pos):                 ##Check to see if the position is within the 2x2
+def is_point_contained(pos):                 ##Check to see if the position is within the 2x2. These numbers are from the specific geometry and are hard coded
     if abs(pos[0])>670: return False
     if abs(pos[1]-430)>670:return False
     if abs(pos[2])>670:return False
@@ -103,7 +105,8 @@ def residual(evt,part_id):                                                      
                 residual_array.append(np.abs(residual))
     return np.array(de_dx_array), np.array(residual_array)
 
-edep_tree=RT.TChain("EDepSimEvents")
+#Main part of the code that accesses the information in the input file before passing it the called functions
+edep_tree=RT.TChain("EDepSimEvents")                                   
 grtk_tree=RT.TChain("DetSimPassThru/gRooTracker")
 filelist=[sys.argv[x] for x in range(1,len(sys.argv))]
 for file in filelist:
