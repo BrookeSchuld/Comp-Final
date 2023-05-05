@@ -80,10 +80,6 @@ def reco(evt,part_id):                                                 #Gets the
                         seg_length=(seg[1][n].GetStart()-seg[1][n].GetStop()).Mag()/10
                         if seg_length==0: continue
                         de_dx.append(-seg[1][n].GetEnergyDeposit()/seg_length)
-                    #for i in proton_children:
-                    #    if i==key_contrib:
-                    #if proton_id==key_contrib:
-                     #       reco_energy+=seg[1][n].GetEnergyDeposit()
     return reco_energy,de_dx   
 
 def residual(evt,part_id):                                                                 #Gets the residual range for a given particle
@@ -100,16 +96,10 @@ def residual(evt,part_id):                                                      
                 seg_length=(seg[1][n].GetStart()-seg[1][n].GetStop()).Mag()/10
                 de_dx=-seg[1][n].GetEnergyDeposit()/seg_length
                 residual=(seg[1][n].GetStart()-traj[part_id].Points[-1].GetPosition()).Mag()/10
-                if 30<abs(residual)<seg_length: continue
+                if 30<abs(residual)<seg_length: continue                               #only care about the last 30cm of the track, excluding the last point (usually inaccurate)
                 de_dx_array.append(de_dx)
                 residual_array.append(np.abs(residual))
     return np.array(de_dx_array), np.array(residual_array)
 
-#Main part of the code that accesses the information in the input file before passing it the called functions
-edep_tree=RT.TChain("EDepSimEvents")                                   
-grtk_tree=RT.TChain("DetSimPassThru/gRooTracker")
-filelist=[sys.argv[x] for x in range(1,len(sys.argv))]
-for file in filelist:
-    edep_tree.Add(file)
-    grtk_tree.Add(file)
+
 
