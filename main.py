@@ -17,9 +17,9 @@ def id(evt,vtx,part_id,trk,theory_de_dx,theory_residual):
         for j in range(len(res_range)):
             n=(np.argmin(np.abs(res_range[j]-theory_residual[i])))     #Find the expected residual given the de/dx and compares it to the given residual 
             
-            chi.append(np.abs((theory_de_dx[i][n]-de_dx[j])/theory_de_dx[i][n]))
-        chi_squared.append(np.sum((chi))**2)
-    return chi_squared/len(de_dx)                                               # return  reduced chi squared for each of the three masses
+            chi.append(np.abs((theory_de_dx[i][n]-de_dx[j])**2/theory_de_dx[i][n]))
+        chi_squared.append(np.sum((chi))/len(de_dx)
+    return chi_squared                                                 # return  reduced chi squared for each of the three masses
 
 
 #extract root trees
