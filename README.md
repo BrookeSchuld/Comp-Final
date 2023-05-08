@@ -10,6 +10,9 @@ The main code is provided in the "main" folder, with additional functions being 
 Reading the Output:
 Output is a txt file with two columns- particle ID and the most likely type. 
 
+Analysis: 
+An example output file is provided showing both the real particle ID and the tagged ID. The success rate was about 80%. 
+
 
 
 
