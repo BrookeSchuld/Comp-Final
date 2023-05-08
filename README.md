@@ -11,7 +11,7 @@ Reading the Output:
 Output is a txt file with two columns- particle ID and the most likely type. 
 
 Analysis: 
-An example output file is provided showing both the real particle ID and the tagged ID. The success rate was about 80%. 
+An example output file is provided showing both the real particle ID and the tagged ID. The success rate was about 80%. Additional information is provided in the writeup document. 
 
 
 
