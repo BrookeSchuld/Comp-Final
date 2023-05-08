@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 #Function that gets called if the particle meets the specifications to be identified. 
 def id(evt,vtx,part_id,trk,theory_de_dx,theory_residual):
     de_dx,res_range=plotting_functions.residual(evt,part_id)  #gets the residual range and de/dx of the function
-    p=np.linspace(10,600,10000)
     chi_squared=[]
     for i in range(len(theory_de_dx)):
         chi=[]
@@ -58,7 +57,7 @@ for evt in range(nevt):                              #loop over each event
         if re_co/(trk.GetInitialMomentum().E()-trk.GetInitialMomentum().M())<.9:continue      #is the reconstructed energy enough to rule out another interaction 
        
         likelihood=id(evt,vtx,part_id,trk,theory_de_dx,theory_residual)
-        if min(likelihood)>2: continue                         #Is there a good match 
+        if min(likelihood)>6: continue                         #Is there a good match 
         max_like=np.argmin(likelihood)                         #which match is best
         particle=particles[max_like]
         with open("tagged.txt","a") as f:                      #write the particle id and it's tag
